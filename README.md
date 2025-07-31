@@ -22,18 +22,10 @@ API RESTful desenvolvida em **Java + Spring Boot**, com autenticação baseada e
 | Persistência        | Spring Data JPA                                 |
 | Banco de dados      | PostgreSQL                                      |
 | ORM                 | Hibernate (via JPA)                             |
-| Migrations          | *[não identificado no `pom.xml`]*
 | Gerenciador de deps | Maven                                           |
-| Testes              | Spring Boot Test, Spring Security Test          |
 | Conveniência        | Lombok                                          |
 | DevOps              | Docker, docker-compose                          |
 
-## ⚙️ Requisitos
-
-- Java 17+
-- Docker (opcional para ambiente conteinerizado)
-- PostgreSQL (local ou via Docker)
-- Maven
 
 ## 📦 Instalação e Execução
 

@@ -22,10 +22,11 @@ public class User implements UserDetails {
     private Long id;
 
     private String name;
-    private String username;
 
     @Column(unique = true)
     private String email;
+
+    private String username;
 
     private String password;
 

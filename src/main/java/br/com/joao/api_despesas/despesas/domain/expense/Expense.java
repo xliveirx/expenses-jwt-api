@@ -1,6 +1,7 @@
-package br.com.joao.api_despesas.despesas.domain.expenses;
+package br.com.joao.api_despesas.despesas.domain.expense;
 
 import br.com.joao.api_despesas.despesas.domain.user.User;
+import br.com.joao.api_despesas.despesas.dto.ExpenseRequestDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Table(name = "expenses")
 @Getter
 @Setter
-public class Expenses {
+public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,5 +26,16 @@ public class Expenses {
     private Status status;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
+
+    public Expense(ExpenseRequestDTO dto, User logged) {
+        this.description = dto.description();
+        this.date = dto.date();
+        this.amount = dto.amount();
+        this.status = Status.PENDING;
+        this.user = logged;
+    }
+
+    public Expense() {}
 }

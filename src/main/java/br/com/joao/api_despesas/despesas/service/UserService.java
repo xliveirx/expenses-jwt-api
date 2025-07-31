@@ -9,14 +9,17 @@ import br.com.joao.api_despesas.despesas.exceptions.ApplicationException;
 import br.com.joao.api_despesas.despesas.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class UserService
-{
+public class UserService implements UserDetailsService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -88,9 +91,14 @@ public class UserService
         userRepository.save(user);
     }
 
-    public List<UserResponseDTO> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(u -> new UserResponseDTO(u.getId(), u.getName(), u.getEmail(), u.getUsername()))
-                .toList();
+    public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(u -> new UserResponseDTO(u.getId(), u.getName(), u.getEmail(), u.getUsername()));
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmailIgnoreCaseAndEnabledTrue(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

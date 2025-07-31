@@ -9,12 +9,14 @@ import br.com.joao.api_despesas.despesas.dto.ExpenseResponseDTO;
 import br.com.joao.api_despesas.despesas.dto.StatusUpdateDTO;
 import br.com.joao.api_despesas.despesas.service.ExpenseService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/expenses")
@@ -35,8 +37,12 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ExpenseResponseDTO>> getAllUserExpenses(@AuthenticationPrincipal User logged){
-        return ResponseEntity.ok(expenseService.getAllUserExpenses(logged));
+    public ResponseEntity<Page<ExpenseResponseDTO>> getAllUserExpenses(
+            @AuthenticationPrincipal User logged,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(expenseService.getAllUserExpenses(logged, pageable));
     }
 
     @PutMapping("/edit-expense/{id}")
@@ -63,17 +69,31 @@ public class ExpenseController {
     }
 
     @GetMapping("/paid")
-    public ResponseEntity<List<ExpenseResponseDTO>> getPaidExpenses(@AuthenticationPrincipal User logged){
-        return ResponseEntity.ok(expenseService.getPaidExpenses(logged));
+    public ResponseEntity<Page<ExpenseResponseDTO>> getPaidExpenses(
+            @AuthenticationPrincipal User logged,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(expenseService.getPaidExpenses(logged, pageable));
     }
 
     @GetMapping("/pending")
-    public ResponseEntity<List<ExpenseResponseDTO>> geteUnpaidExpenses(@AuthenticationPrincipal User logged){
-        return ResponseEntity.ok(expenseService.getUnpaidExpenses(logged));
+    public ResponseEntity<Page<ExpenseResponseDTO>> getUnpaidExpenses(
+            @AuthenticationPrincipal User logged,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(expenseService.getUnpaidExpenses(logged, pageable));
     }
 
-    @GetMapping("/month/{month}")
-    public ResponseEntity<List<ExpenseResponseDTO>> getMonthExpenses(@AuthenticationPrincipal User logged, @PathVariable int month){
-        return ResponseEntity.ok(expenseService.getExpensesByMonth(logged, month));
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ExpenseResponseDTO>> getMonthExpenses(
+            @AuthenticationPrincipal User logged,
+            @RequestParam int month,
+            @RequestParam int year,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(expenseService.getExpensesByMonth(logged, month, year, pageable));
     }
 }

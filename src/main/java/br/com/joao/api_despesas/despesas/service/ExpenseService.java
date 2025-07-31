@@ -8,11 +8,12 @@ import br.com.joao.api_despesas.despesas.dto.ExpenseResponseDTO;
 import br.com.joao.api_despesas.despesas.exceptions.ApplicationException;
 import br.com.joao.api_despesas.despesas.repository.ExpenseRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import br.com.joao.api_despesas.despesas.domain.expense.Status;
 
 @Service
@@ -34,15 +35,9 @@ public class ExpenseService {
         return expenseRepository.save(expense);
     }
 
-    public List<ExpenseResponseDTO> getAllUserExpenses(User logged) {
-        var expenses = expenseRepository.findAllByUser(logged);
-
-        if(expenses.isEmpty()){
-            throw new ApplicationException("There is no expenses associated with the user");
-        }
-        return expenses.stream()
-                .map(ExpenseResponseDTO::new)
-                .toList();
+    public Page<ExpenseResponseDTO> getAllUserExpenses(User logged, Pageable pageable) {
+        Page<Expense> expenses = expenseRepository.findAllByUser(logged, pageable);
+        return expenses.map(ExpenseResponseDTO::new);
     }
 
     @Transactional
@@ -102,28 +97,18 @@ public class ExpenseService {
         expenseRepository.delete(expense);
     }
 
-    public List<ExpenseResponseDTO> getPaidExpenses(User logged) {
-        var expenses = expenseRepository.findAllByUserAndStatus(logged, Status.PAID);
-        return expenses.stream()
-                .map(ExpenseResponseDTO::new)
-                .toList();
+    public Page<ExpenseResponseDTO> getPaidExpenses(User logged, Pageable pageable) {
+        Page<Expense> expenses = expenseRepository.findAllByUserAndStatus(logged, Status.PAID, pageable);
+        return expenses.map(ExpenseResponseDTO::new);
     }
-    public List<ExpenseResponseDTO> getUnpaidExpenses(User logged) {
-        var expenses = expenseRepository.findAllByUserAndStatus(logged, Status.PENDING);
-        return expenses.stream()
-                .map(ExpenseResponseDTO::new)
-                .toList();
+    
+    public Page<ExpenseResponseDTO> getUnpaidExpenses(User logged, Pageable pageable) {
+        Page<Expense> expenses = expenseRepository.findAllByUserAndStatus(logged, Status.PENDING, pageable);
+        return expenses.map(ExpenseResponseDTO::new);
     }
 
-    public List<ExpenseResponseDTO> getExpensesByMonth(User logged, int month) {
-        var expenses = expenseRepository.findAllByUserAndMonth(logged, month);
-
-        if(expenses.isEmpty()){
-            throw new ApplicationException("There is no expenses associated with the user on month " + month);
-        }
-
-        return expenses.stream()
-                .map(ExpenseResponseDTO::new)
-                .toList();
+    public Page<ExpenseResponseDTO> getExpensesByMonth(User logged, int month, int year, Pageable pageable) {
+        Page<Expense> expenses = expenseRepository.findAllByUserAndMonth(logged, month, year, pageable);
+        return expenses.map(ExpenseResponseDTO::new);
     }
 }

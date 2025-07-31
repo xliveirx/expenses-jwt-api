@@ -1,0 +1,25 @@
+services:
+  api:
+    build: .
+    container_name: expenses_api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/expenses_db
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - expenses-net
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: expenses_db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - expenses-net
+networks:
+  expenses-net:
+    driver: bridge

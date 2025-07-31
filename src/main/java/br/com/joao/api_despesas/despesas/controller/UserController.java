@@ -28,20 +28,20 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO dto){
         User user = userService.createUser(dto);
         return ResponseEntity.created(URI.create("/users/" + user.getId()))
-                .body(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getUsername()));
+                .body(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getUsernameField()));
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<UserResponseDTO> getUserByUsername(@PathVariable String username){
         User user = userService.getUserByUsername(username);
-        return ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getUsername()));
+        return ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getUsernameField()));
     }
 
     @PutMapping("/edit-profile")
     public ResponseEntity<UserResponseDTO> updateUser(@Valid @RequestBody UserUpdateDTO dto,
                                                       @AuthenticationPrincipal User logged){
         User user = userService.updateUser(dto, logged);
-        return ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getUsername()));
+        return ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getUsernameField()));
     }
 
     @DeleteMapping("/disable-profile")
